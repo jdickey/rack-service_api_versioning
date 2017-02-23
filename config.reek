@@ -1,0 +1,21 @@
+
+# NOTE: Even if we're using RubyCritic "instead of" directly invoking Reek, be
+#       aware that RubyCritic *invokes* Reek. Hence, this file should remain
+#       where it is.
+
+# This tells Reek not to complain about module names such as `FooCsV42`, which
+# our conventions say implements the Foo Component Service, API Version 42.
+UncommunicativeModuleName:
+  accept:
+    - !ruby/regexp /CsV\d+?$/
+    - !ruby/regexp /UcV\d+?$/
+
+# Usual suspects copied from previous projects. Commented out until needed.
+
+# LongParameterList:
+#   max_params: 4  # If it's good enough for Sandi, it's good enough for us.
+
+# NestedIterators:
+#   max_allowed_nesting: 2
+#   ignore_iterators:
+#     - lambda

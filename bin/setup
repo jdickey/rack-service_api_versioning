@@ -1,0 +1,12 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+IFS=$'\n\t'
+# set -vx
+
+rm -f Gemfile.lock
+
+# bundle install
+source gemsets/setup-and-bundle.sh
+
+bundle binstub --force flay flog guard pry rake reek rubocop rubycritic
+echo "Setup completed."

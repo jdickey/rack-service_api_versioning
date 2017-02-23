@@ -1,0 +1,16 @@
+/.bundle/
+/.rbenv-gemsets
+/.yardoc
+/Gemfile.lock
+/_yardoc/
+/coverage/
+/doc/
+/gemsets/dev/
+/gemsets/extras/
+/gemsets/runtime/
+/pkg/
+/spec/reports/
+/tmp/
+/o-rdoc/
+/bin/
+!/bin/setup

@@ -1,0 +1,14 @@
+
+AllCops:
+  TargetRubyVersion: 2.3
+  Exclude:
+    - 'gemsets/**/*'
+    - 'bin/**/*'
+    - '*.gemspec'
+    - 'Rakefile'
+    - 'Guardfile'
+
+Metrics/BlockLength:
+  Max: 300
+  Include:
+    - 'test/**/*_test.rb'
