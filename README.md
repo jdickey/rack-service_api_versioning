@@ -30,7 +30,7 @@ This Gem implements three Rack middleware components that, together, enable poss
 
 ### Ubiquitous Language
 
-This Gem was developed to support a larger project involving a collection of separately packaged, independent Component Services communicating via HTTP, with any data transfer objects encoded as JSON. As such, these middleware components use a subset of that project's [Ubiquitous Langauge](https://martinfowler.com/bliki/UbiquitousLanguage.html), which is documented in the file `UBIQUITOUS_LANGUAGE.md` in the project root.
+This Gem was developed to support a larger project involving a collection of separately packaged, independent Component Services communicating via HTTP, with any data transfer objects encoded as JSON. As such, these middleware components use a subset of that project's [Ubiquitous Langauge](https://martinfowler.com/bliki/UbiquitousLanguage.html), which is documented in the file [`UBIQUITOUS_LANGUAGE.md`](https://github.com/jdickey/rack-service_api_versioning/blob/master/UBIQUITOUS_LANGUAGE.md) in the `/doc` directory.
 
 These terms, when used in this or other documents, can be identified as probable Ubiquitous Language terms by their use of initial capital letters, as demonstrated *by* the usage of *Ubiquitous Language* itself.
 
@@ -60,11 +60,11 @@ An application platform may be constructed of a number of separately-maintained 
 
 * How do its collaborators, which may be implemented and maintained by different teams, ensure that they collaborate only with a known-good version of the Target Service when the possibility exists that new versions may introduce breaking changes?
 * How do new API Versions of the Target Service evolve and implement functionality, or even simple API changes, that introduce breaking changes without being hobbled by fealty to backwards compatibility?
-* Given the above, how can multiple API Versions of a given Target Service be deployed *in the same system* to meet the needs of different clients which have not all updated to the "latest and greatest" version due to API changes?
+* Given the above, how can multiple API Versions of a given Target Service be deployed *in the same system* to meet the needs of different clients which have not all updated to the latest version due to API changes?
 * From an operational perspective, how can the system maintain adequate resilience if a newly-deployed API Version's PDA of a Service proves unreliable, yet all clients will happily work with previous API Versions if the new one is unavailable?
 * How can network- and server-related issues such as failover or migration be dealt with while maintaining continuous availability of the larger system?
 
-One solution is to define a single Service Base URL for each Component Service, with the AVIDA application accessible via that URL existing solely to generate HTTP redirects to the Service Base URL for the Primary Delivery Application of a given API Version. The AVIDA **should not** implement code to serve endpoints itself, as they will never be accessed when using the middleware correctly. The middleware components get information about the currently-available API Versions by querying a [Repository](#the-repository); maintaining the correctness and currency of that data is outside the scope of this document (or this Gem).
+One solution is to define a single Service Base URL for each Component Service, with the AVIDA application accessible via that URL existing solely to generate HTTP redirects to the Service Base URL for the Primary Delivery Application of a given API Version. The AVIDA **must not** implement code to serve Service Endpoints itself, as they will never be accessed when using the middleware correctly. The middleware components get information about the currently-available API Versions by querying a [Repository](#the-repository); maintaining the correctness and currency of that data is outside the scope of this document (or this Gem).
 
 Below, we discuss the three artefacts directly involved with the use of the Rack middleware components in this Gem: the AVIDA (API Version-Independent Primary Delivery Application); the Repository containing information about currently available API Versions; and the API Implementation Primary Delivery Application (PDA).
 
@@ -73,7 +73,7 @@ Below, we discuss the three artefacts directly involved with the use of the Rack
 The API Version-Independent Delivery Application, or AVIDA, is a stub which has two purposes:
 
 * to provide a single, canonical Service Base URL for a given Component Service regardless of API Version (hence the name), and
-* to host the Rack middleware components implemented in this Gem, which redirect requests to the appropriate API Version-specific PDA based on HTTP content negotiation.
+* to host the Rack middleware components implemented in this Gem, which redirect requests to the appropriate API Version-specific Primary Delivery Application (PDA) based on HTTP content negotiation.
 
 The AVIDA **must not** implement routing or other logic of its own. It **must** provide a Repository instance, as [specified](#the-repository), containing information about the available API Versions to the `ServiceComponentDescriber` middleware component.
 
