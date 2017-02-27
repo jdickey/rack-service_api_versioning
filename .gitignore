@@ -4,9 +4,6 @@
 /Gemfile.lock
 /_yardoc/
 /coverage/
-/gemsets/dev/
-/gemsets/extras/
-/gemsets/runtime/
 /pkg/
 /spec/reports/
 /tmp/
