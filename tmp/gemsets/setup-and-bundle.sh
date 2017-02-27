@@ -1,19 +1,18 @@
 #!/usr/bin/env zsh
 
 RBVER=`rbenv version | cut -f 1 -d ' '`
-rm -rf .rbenv-gemsets gemsets/{dev,extras,runtime}
-mkdir -p $RBENV_ROOT/versions/$RBVER/gemsets/.project-gemsets/dummy_rack-service_api_versioning_dummy
-rm -rf $RBENV_ROOT/versions/$RBVER/gemsets/.project-gemsets/*rack-service_api_versioning*
-unset RBVER
+GEMSETBASE="tmp/gemsets/$RBVER"
+rm -rf .rbenv-gemsets $GEMSETBASE/{dev,extras,runtime}
+# mkdir -p $RBENV_ROOT/versions/$RBVER/gemsets/.project-gemsets/dummy_service_catalogue_uc_v1_dummy
+# rm -rf $RBENV_ROOT/versions/$RBVER/gemsets/.project-gemsets/*service_catalogue_uc_v1*
 
-rbenv gemset init ./gemsets/runtime
+mkdir -p $GEMSETBASE
+rbenv gemset init $GEMSETBASE/runtime
 gem install prolog-dry_types -v 0.3.2
-gem install roda -v 2.22.0
-gem install semantic_logger -v 3.4.1
-gem install thin -v 1.7.0
+gem install rack -v 2.0.1
 
-rbenv gemset init ./gemsets/dev
-echo "./gemsets/dev\n./gemsets/runtime" > .rbenv-gemsets
+rbenv gemset init $GEMSETBASE/dev
+echo "$GEMSETBASE/dev\n$GEMSETBASE/runtime" > .rbenv-gemsets
 gem install rake -v 11.3.0
 # gem install rake -v 12.0.0
 gem install minitest -v 5.10.1
@@ -39,11 +38,12 @@ gem install guard-rake -v 1.0.0
 gem install guard-reek -v 1.0.2
 gem install guard-rubocop -v 1.2.0
 gem install guard-rubycritic -v 2.9.3
-gem install guard-shell -v 0.7.1
+# gem install guard-shell -v 0.7.1
 
 # gem install fury -v 0.0.5
-rbenv gemset init ./gemsets/extras
-echo "./gemsets/extras\n./gemsets/dev\n./gemsets/runtime" > .rbenv-gemsets
+rbenv gemset init $GEMSETBASE/extras
+echo "$GEMSETBASE/extras\n$GEMSETBASE/dev\n$GEMSETBASE/runtime" > .rbenv-gemsets
+unset RBVER
 rbenv rehash
 
 bundle install --local
