@@ -11,7 +11,7 @@ describe 'ServiceApiVersioning middleware has' do
   end
 
   it 'an ApiVersionRedirector class' do
-    actual = ApiVersionRedirector # NOTE: Issue #5
+    actual = Rack::ServiceApiVersioning::ApiVersionRedirector
     expect(actual).must_be_instance_of Class
   end
 
