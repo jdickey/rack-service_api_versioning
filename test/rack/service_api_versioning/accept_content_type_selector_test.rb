@@ -108,9 +108,14 @@ describe 'Rack::ServiceApiVersioning::AcceptContentTypeSelector' do
             'application/vnd.acme.apidemo.v2+json'
           end
 
-          it 'matches the requested content type/API Version' do
+          it 'matches the correct Service Base URL' do
             expected = SINGLE_API.dig(:api_versions, 'v2', :base_url)
             expect(api_version_data[:base_url]).must_equal expected
+          end
+
+          it 'has the correct Content Type' do
+            expected = SINGLE_API.dig(:api_versions, 'v2', :content_type)
+            expect(api_version_data[:content_type]).must_equal expected
           end
         end # describe 'is an exact match for the available version'
 
