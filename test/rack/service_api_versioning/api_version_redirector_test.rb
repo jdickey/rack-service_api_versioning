@@ -5,8 +5,8 @@ require 'json'
 
 require 'rack/service_api_versioning/api_version_redirector'
 
-describe 'ApiVersionRedirector' do
-  let(:described_class) { ApiVersionRedirector }
+describe 'Rack::ServiceApiVersioning::ApiVersionRedirector' do
+  let(:described_class) { Rack::ServiceApiVersioning::ApiVersionRedirector }
   let(:app) do
     Class.new do
       def initialize
