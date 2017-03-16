@@ -38,6 +38,8 @@ module Rack
       def version_data
         ReturnData.new api_version: api_version, base_url: base_url, name: name,
                        vendor_org: vendor_org
+      rescue Dry::Struct::Error => original_error
+        raise InvalidBaseUrlError.new base_url, original_error
       end
 
       # Unpacks relevant attributes from passed-in input data
@@ -75,10 +77,13 @@ module Rack
 
       # Immutable, structured data type for returned version data.
       class ReturnData < Dry::Struct::Value
+        SBU_FMT = %r{\A\w+?://.+?/\z}
+        private_constant :SBU_FMT
+
         constructor_type :strict_with_defaults
 
         attribute :api_version, Types::Coercible::String
-        attribute :base_url, Types::Strict::String
+        attribute :base_url, Types::Strict::String.constrained(format: SBU_FMT)
         attribute :name, Types::Strict::String
         attribute :deprecated, Types::Strict::Bool.default(false)
         attribute :restricted, Types::Strict::Bool.default(false)
@@ -104,3 +109,15 @@ module Rack
     end # class EncodedApiVersionData
   end
 end
+
+# Exception wrapper class for invalid return data due to bad SBU. This is not
+# nested within the `EncodedApiVersionData` class so as not to unnecessarily
+# leak extraneous implementation details.
+class InvalidBaseUrlError < RuntimeError
+  def initialize(base_url, original_error)
+    @original_error = original_error
+    super "Invalidly formatted base URL: #{base_url}"
+  end
+
+  attr_reader :original_error
+end # class InvalidBaseUrlError

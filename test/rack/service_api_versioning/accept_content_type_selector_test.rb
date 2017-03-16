@@ -26,6 +26,40 @@ describe 'Rack::ServiceApiVersioning::AcceptContentTypeSelector' do
   let(:obj) { described_class.new app }
   let(:response) { obj.call env }
 
+  SINGLE_API = { name: 'apidemo',
+                 description: 'The API Demonstration Component Service',
+                 api_versions: {
+                   'v2' => {
+                     base_url: 'http://v2.example.com:9876/',
+                     content_type: 'application/vnd.acme.apidemo.v2+json',
+                     restricted: false,
+                     deprecated: false
+                   }
+                 } }.freeze
+
+  MULTIPLE_APIS = { name: 'apidemo',
+                    description: 'The API Demonstration Component Service',
+                    api_versions: {
+                      'v2' => {
+                        base_url: 'http://v2.example.com:9876/',
+                        content_type: 'application/' \
+                                      'vnd.acme.apidemo.v2+json',
+                        restricted: false,
+                        deprecated: false
+                      },
+                      'v3' => {
+                        base_url: 'http://v3.example.org/',
+                        content_type: 'application/' \
+                                      'vnd.acme.apidemo.v3+json',
+                        restricted: false,
+                        deprecated: false
+                      }
+                    } }.freeze
+
+  NO_APIS = { name: 'apidemo',
+              description: 'The API Demonstration Component Service',
+              api_versions: {} }.freeze
+
   describe 'when called with a COMPONENT_DESCRIPTION value that' do
     describe 'is missing' do
       describe 'returns a Rack response with' do
@@ -42,10 +76,6 @@ describe 'Rack::ServiceApiVersioning::AcceptContentTypeSelector' do
     end # describe 'is missing'
 
     describe 'contains no API Version data' do
-      NO_APIS = { name: 'apidemo',
-                  description: 'The API Demonstration Component Service',
-                  api_versions: {} }.freeze
-
       before { env['COMPONENT_DESCRIPTION'] = JSON.dump(NO_APIS) }
 
       describe 'returns a Rack response with' do
@@ -60,20 +90,53 @@ describe 'Rack::ServiceApiVersioning::AcceptContentTypeSelector' do
         end
       end # describe 'returns a Rack response with'
     end # describe 'contains no API Version data'
+
+    describe 'contains a Base URL that is invalid because' do
+      let(:accept_header) do
+        'application/vnd.acme.apidemo.v2+json'
+      end
+      let(:bad_api_version_data) do
+        ret = SINGLE_API.dup
+        ret.dig(:api_versions, 'v2')[:base_url] = bad_sbu
+        ret
+      end
+
+      before do
+        env['COMPONENT_DESCRIPTION'] = JSON.dump(bad_api_version_data)
+        env['HTTP_ACCEPT'] = accept_header
+      end
+
+      describe 'the finalising slash (/) is' do
+        let(:bad_sbu) { 'http://v2.example.com:9876/foo' }
+
+        it 'omitted' do
+          begin
+            obj.call env
+            flunk 'Expected InvalidBaseUrlError was not raised'
+          rescue InvalidBaseUrlError => e
+            expected = 'Invalidly formatted base URL: ' + bad_sbu
+            expect(e.message).must_equal expected
+          end
+        end
+      end # describe 'the finalising slash (/) is'
+
+      describe 'the fully-formed URL was not' do
+        let(:bad_sbu) { 'v2.example.com:9876/' }
+
+        it 'specified' do
+          begin
+            obj.call env
+            flunk 'Expected InvalidBaseUrlError was not raised'
+          rescue InvalidBaseUrlError => e
+            expected = 'Invalidly formatted base URL: ' + bad_sbu
+            expect(e.message).must_equal expected
+          end
+        end
+      end # describe 'the fully-formed URL was not'
+    end # describe 'contains a Base URL that is invalid because'
   end # describe 'when called with a COMPONENT_DESCRIPTION value that'
 
   describe 'when the Target Service has a single API Version' do
-    SINGLE_API = { name: 'apidemo',
-                   description: 'The API Demonstration Component Service',
-                   api_versions: {
-                     'v2' => {
-                       base_url: 'http://v2.example.com:9876/',
-                       content_type: 'application/vnd.acme.apidemo.v2+json',
-                       restricted: false,
-                       deprecated: false
-                     }
-                   } }.freeze
-
     let(:api_version_str) { app.env['COMPONENT_API_VERSION_DATA'].to_s }
     let(:api_version_data) do
       JSON.parse(api_version_str, symbolize_names: true)
@@ -108,11 +171,13 @@ describe 'Rack::ServiceApiVersioning::AcceptContentTypeSelector' do
             'application/vnd.acme.apidemo.v2+json'
           end
 
+          # tag :focus
           it 'matches the correct Service Base URL' do
             expected = SINGLE_API.dig(:api_versions, 'v2', :base_url)
             expect(api_version_data[:base_url]).must_equal expected
           end
 
+          # tag :focus
           it 'has the correct Content Type' do
             expected = SINGLE_API.dig(:api_versions, 'v2', :content_type)
             expect(api_version_data[:content_type]).must_equal expected
@@ -145,6 +210,7 @@ describe 'Rack::ServiceApiVersioning::AcceptContentTypeSelector' do
             'application/vnd.acme.apidemo.v2+json'
           end
 
+          # tag :focus
           it 'matches the content type in both header and list' do
             expected = SINGLE_API.dig(:api_versions, 'v2', :base_url)
             expect(api_version_data[:base_url]).must_equal expected
@@ -174,25 +240,6 @@ describe 'Rack::ServiceApiVersioning::AcceptContentTypeSelector' do
   end # describe 'when the Target Service has a single API Version'
 
   describe 'where the Target Service has multlple API Versions' do
-    MULTIPLE_APIS = { name: 'apidemo',
-                      description: 'The API Demonstration Component Service',
-                      api_versions: {
-                        'v2' => {
-                          base_url: 'http://v2.example.com:9876/',
-                          content_type: 'application/' \
-                                        'vnd.acme.apidemo.v2+json',
-                          restricted: false,
-                          deprecated: false
-                        },
-                        'v3' => {
-                          base_url: 'http://v3.example.org/',
-                          content_type: 'application/' \
-                                        'vnd.acme.apidemo.v3+json',
-                          restricted: false,
-                          deprecated: false
-                        }
-                      } }.freeze
-
     let(:api_version_str) { app.env['COMPONENT_API_VERSION_DATA'].to_s }
     let(:api_version_data) do
       JSON.parse(api_version_str, symbolize_names: true)
