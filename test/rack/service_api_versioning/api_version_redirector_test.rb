@@ -62,9 +62,11 @@ describe 'Rack::ServiceApiVersioning::ApiVersionRedirector' do
       end
 
       it 'a body with a readable "please redirect w/o caching" text' do
-        fragment = "<a href=\"#{new_request_url}\">#{new_request_url}</a>"
-        matches = response[2].body.join.match?(fragment)
-        expect(matches).wont_be :nil?
+        the_body = response[2].body.join
+        fragment = version_data[:base_url] + path_info[1..-1] + '?' +
+                   query_string
+        parts = the_body.split(fragment)
+        expect(parts.count).must_equal 3
       end
 
       # Yes, we *do* need all these environment entries to make Rack, or more
