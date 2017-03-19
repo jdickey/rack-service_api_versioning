@@ -1,20 +1,19 @@
 #!/usr/bin/env zsh
 
 RBVER=`rbenv version | cut -f 1 -d ' '`
-GEMSETBASE="tmp/gemsets/$RBVER"
+GEMSETBASE="./tmp/gemsets/$RBVER"
 rm -rf .rbenv-gemsets $GEMSETBASE/{dev,extras,runtime}
-# mkdir -p $RBENV_ROOT/versions/$RBVER/gemsets/.project-gemsets/dummy_service_catalogue_uc_v1_dummy
-# rm -rf $RBENV_ROOT/versions/$RBVER/gemsets/.project-gemsets/*service_catalogue_uc_v1*
+mkdir -p $RBENV_ROOT/versions/$RBVER/gemsets/.project-gemsets/rack-service_api_versioning-dummy
+rm -rf $RBENV_ROOT/versions/$RBVER/gemsets/.project-gemsets/*rack-service_api_versioning*
 
 mkdir -p $GEMSETBASE
 rbenv gemset init $GEMSETBASE/runtime
-gem install prolog-dry_types -v 0.3.2
+gem install prolog-dry_types -v 0.3.3
 gem install rack -v 2.0.1
 
 rbenv gemset init $GEMSETBASE/dev
 echo "$GEMSETBASE/dev\n$GEMSETBASE/runtime" > .rbenv-gemsets
-gem install rake -v 11.3.0
-# gem install rake -v 12.0.0
+gem install rake -v 12.0.0
 gem install minitest -v 5.10.1
 gem install minitest-matchers -v 1.4.1
 gem install minitest-reporters -v 1.1.14
@@ -26,7 +25,7 @@ gem install pry-byebug -v 3.4.2
 gem install pry-doc -v 0.10.0
 gem install reek -v 4.5.6
 gem install rubocop -v 0.47.1
-gem install simplecov -v 0.13.0
+gem install simplecov -v 0.14.1
 
 gem install awesome_print -v 1.7.0
 gem install colorator -v 1.1.0
