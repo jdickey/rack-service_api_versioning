@@ -3,9 +3,7 @@
 require 'rack'
 require 'rack/response'
 
-require_relative './env_items'
-require_relative './list_methods_in_module'
-require_relative './rack_env_for_uri'
+require_relative './build_redirect_uri_from_env'
 
 # All(?) Rack code is namespaced within this module.
 module Rack
@@ -32,10 +30,6 @@ module Rack
 
       attr_reader :app, :env
 
-      def api_version_base_uri
-        URI.parse(api_version_data[:base_url])
-      end
-
       def api_version
         api_version_data[:api_version]
       end
@@ -44,33 +38,22 @@ module Rack
         JSON.parse(env['COMPONENT_API_VERSION_DATA'], symbolize_names: true)
       end
 
-      def headers
-        { 'API-Version' => api_version,
-          'Location' => location_header }
+      def body
+        'Please resend the request to ' \
+          "<a href=\"#{location}\">#{location}</a>" \
+          ' without caching it.'
       end
 
-      def location_header
-        uri = api_version_base_uri
-        url_from_tweaked_env(uri)
+      def headers
+        { 'API-Version' => api_version, 'Location' => location }
+      end
+
+      def location
+        BuildRedirectUriFromEnv.call(env)
       end
 
       def response
-        Rack::Response.new(response_body, DEFAULT_STATUS, headers).finish
-      end
-
-      def response_body
-        '<p>Please resend the request to ' \
-        "<a href='#{location_header}'>this endpoint</a> without caching it.</p>"
-      end
-
-      def tweak_env_for(uri)
-        @env.merge! RackEnvForUri.call(uri)
-      end
-
-      def url_from_tweaked_env(uri)
-        actual_env = tweak_env_for(uri)
-        req = Rack::Request.new(actual_env)
-        req.url
+        Rack::Response.new(body, DEFAULT_STATUS, headers).finish
       end
     end # class Rack::ServiceApiVersioning::ApiVersionRedirector
   end

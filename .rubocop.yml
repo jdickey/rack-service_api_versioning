@@ -9,6 +9,6 @@ AllCops:
     - 'Guardfile'
 
 Metrics/BlockLength:
-  Max: 300
+  Max: 800
   Include:
     - 'test/**/*_test.rb'

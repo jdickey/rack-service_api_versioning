@@ -4,6 +4,8 @@ require 'forwardable'
 
 require 'prolog/dry_types'
 
+require_relative './invalid_base_url_error'
+
 # All(?) Rack code is namespaced within this module.
 module Rack
   # Module includes our middleware components for managing service API versions.
@@ -35,9 +37,19 @@ module Rack
 
       attr_reader :api_version
 
+      def raise_invalid_base_url_error(original_error)
+        raise InvalidBaseUrlError.new base_url, original_error
+      end
+
+      def return_data_params
+        { api_version: api_version, base_url: base_url, name: name,
+          vendor_org: vendor_org }
+      end
+
       def version_data
-        ReturnData.new api_version: api_version, base_url: base_url, name: name,
-                       vendor_org: vendor_org
+        ReturnData.new return_data_params
+      rescue Dry::Struct::Error => original_error
+        raise_invalid_base_url_error original_error
       end
 
       # Unpacks relevant attributes from passed-in input data
@@ -75,10 +87,13 @@ module Rack
 
       # Immutable, structured data type for returned version data.
       class ReturnData < Dry::Struct::Value
+        SBU_FMT = %r{\A\w+?://.+?/\z}
+        private_constant :SBU_FMT
+
         constructor_type :strict_with_defaults
 
         attribute :api_version, Types::Coercible::String
-        attribute :base_url, Types::Strict::String
+        attribute :base_url, Types::Strict::String.constrained(format: SBU_FMT)
         attribute :name, Types::Strict::String
         attribute :deprecated, Types::Strict::Bool.default(false)
         attribute :restricted, Types::Strict::Bool.default(false)
