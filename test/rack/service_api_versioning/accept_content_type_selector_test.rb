@@ -181,7 +181,7 @@ describe 'Rack::ServiceApiVersioning::AcceptContentTypeSelector' do
         begin
           @obj.call @env
           flunk 'Expected InvalidBaseUrlError was not raised'
-        rescue InvalidBaseUrlError => e
+        rescue Rack::ServiceApiVersioning::InvalidBaseUrlError => e
           expect(e.message).must_equal @expected
         end
       end # describe 'the finalising slash (/) is'
@@ -190,7 +190,7 @@ describe 'Rack::ServiceApiVersioning::AcceptContentTypeSelector' do
         begin
           @obj.call @env
           flunk 'Expected InvalidBaseUrlError was not raised'
-        rescue InvalidBaseUrlError => e
+        rescue Rack::ServiceApiVersioning::InvalidBaseUrlError => e
           expect(e.message).must_equal @expected
         end
       end
