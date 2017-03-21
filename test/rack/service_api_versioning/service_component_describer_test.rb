@@ -5,7 +5,7 @@ require 'uri'
 
 require 'rack/service_api_versioning/service_component_describer'
 
-DUMMY_REPO_DATA = {
+SCD_DUMMY_REPO_DATA = {
   apidemo: {
     name: 'apidemo',
     description: 'The API Demonstration Component Service',
@@ -50,7 +50,7 @@ describe 'Rack::ServiceApiVersioning::ServiceComponentDescriber' do
     let(:repository) do
       Class.new do
         def initialize
-          @data = DUMMY_REPO_DATA
+          @data = SCD_DUMMY_REPO_DATA
           self
         end
 
@@ -103,7 +103,8 @@ describe 'Rack::ServiceApiVersioning::ServiceComponentDescriber' do
               it 'the correct port number if non-default port specified' do
                 actual_url = api_versions.values.first[:base_url]
                 actual_port = URI.parse(actual_url).port
-                expected_api_versions = DUMMY_REPO_DATA[:apidemo][:api_versions]
+                expected_api_versions = SCD_DUMMY_REPO_DATA.dig(:apidemo,
+                                                                :api_versions)
                 expected_url = expected_api_versions.values.last[:base_url]
                 expected_port = %r{:(\d+?)/$}.match(expected_url)[1].to_i
                 expect(actual_port).must_equal expected_port
