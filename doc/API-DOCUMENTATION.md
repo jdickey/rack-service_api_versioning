@@ -1,5 +1,7 @@
 <h1>Contents</h1>
 
+# Contents
+
 - [Before We Get Started](#before-we-get-started)
   * [A Note on Terminology](#a-note-on-terminology)
   * [FAQ for This Document](#faq-for-this-document)
@@ -11,6 +13,10 @@
 - [The `AcceptContentTypeSelector` Middleware Component](#the-acceptcontenttypeselector-middleware-component)
   * [Inputs from Rack Environment](#inputs-from-rack-environment)
   * [Error Reporting](#error-reporting-1)
+- [The `ApiVersionRedirector` Middleware Component](#the-apiversionredirector-middleware-component)
+  * [Error Reporting](#error-reporting-2)
+- [Feasible Future Features](#feasible-future-features)
+  * [Other Ideas?](#other-ideas)
 
 # Before We Get Started
 
@@ -122,7 +128,7 @@ The `HTTP_ACCEPT` value represents the standard `Accept` header used for HTTP co
 
 where
 
-* `vnd.` is a conventional abbreviation for "vendor"; i.e., for an application content type that is not part of the HTTP or related IETF Standards;
+* `vnd` is a conventional abbreviation for "vendor"; i.e., for an application content type that is not part of the HTTP or related IETF Standards;
 * `COMPANYORORG` is the name of the company or organisation responsible for maintaining the application on whose behalf the Content Type is used. In our documentation for this gem, we have been using the example `acme`, for [Acme Corporation](https://en.wikipedia.org/wiki/Acme_Corporation);
 * `APINAME` is the name of the application programming interface (or *API*) which these middleware components are being used to support. In the documentation for this Gem, we have been using the example `apidemo`, for the *API Demo Component Service*; and
 * `STR` is an API-unique version identifier. Conventionally, and as demonstrated in this documentation, this has been an integer (which would presumably increment for each successive API Version release), giving an example such as `v1` or `v472`. In practice, it can be virtually *any* string-representable application-unique identifier; for those using [Semantic Versioning](http://semver.org), you might have an example such as `v1.0.0` or `v42.6.4-pre71`. As long as the version identifier is meaningful to you and your development team, it should be useable here.
@@ -134,3 +140,27 @@ The middleware component will abort processing of the request and return an HTTP
 
 * An HTTP [400](https://httpstatuses.com/400) (*Bad Request*) will be returned if there is no defined `COMPONENT_DESCRIPTION` value or if that value does not contain valid [Repository](#the-repository) data in JSON format with at least one API Version defined; or
 * An HTTP [406](https://httpstatuses.com/406) (*Not Acceptable*) will be returned if the API Version specifier in the `HTTP_ACCEPT` environment value does not match any API Versions reported as supported by parsing the `COMPONENT_DESCRIPTION` environment value.
+
+# The `ApiVersionRedirector` Middleware Component
+
+The `ApiVersionRedirector` middleware component parses the JSON encoded in the `COMPONENT_API_VERSION_DATA` value by the `AcceptContentTypeSelector` middleware component. It then builds a Rack response with
+
+* the status code [307](https://httpstatuses.com/307) (*Temporary Redirect*);
+* body content containing the markup `Please resend the request to <a href="LOCATION">LOCATION</a> without caching it.`, where `LOCATION` is replaced by the value of the `Location` header (see the next item); and
+* headers for
+  * `API-Version`, with a value of the API Version used to match the request (e.g., `v1` or `v2.14.6`); and
+  * `Location`, with a value of the full URL for the API Version-specific request as supplied to the AVIDA, including path information and query parameters, if any.
+
+## Error Reporting
+
+**None.** If the `COMPONENT_DESCRIPTION` entry in the Rack environment is missing, or is invalidly formatted, then this middleware component *will* fail. Adding error detection and reporting similar to that of [`AcceptContentTypeSelector`](#the-servicecomponentdescriber-middleware-component), above, *but* the question may reasonably be asked, *how useful would that be in practice?* If these three components are always used together in the correct sequence, then there should be no possible error path for this middleware component; if an error is encountered in operation, that is a strong indication that the *use* of the middleware in that particular AVIDA is incorrect.
+
+# Feasible Future Features
+
+1. The initial release of this Gem itself uses no encryption; if HTTPS rather than HTTP is used between Component Services, that would provide an increased level of security. HTTPS, however, is not presently **required,** but is **recommended.** An imminent future release is being considered which would use the [RbNaCl](https://github.com/cryptosphere/rbnacl) library's support for [public-key encryption](https://github.com/cryptosphere/rbnacl/wiki/SimpleBox#public-key-encryption-with-simplebox) to secure and authenticate HTTP payloads and, where practical, message data.
+2. Despite the explanation given for the deliberate omission of error reporting in the `ApiVersionRedirector` middleware component (immediately above), some intrepid soul may choose to implement it anyway. (It's open source; it's a platform for learning experiences.)
+3. Some misadventurous developer may choose to implement the three existing middleware components *as a single, unified component.* We considered that approach during initial development, and abandoned it because we strongly feel that the "boilerplate" of including two "extra" middleware components is *far* outweighed by the inner complexity that such a unified component would contain, and the likelihood that any future change would have effects beyond the intended change. ([SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)) *is* a thing, you know.)
+
+## Other Ideas?
+
+Do you see something we missed that you'd find useful? Open an [issue and PR](https://github.com/jdickey/rack-service_api_versioning/#contributing) and let's have a chat about it!
