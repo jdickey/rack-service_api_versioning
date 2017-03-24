@@ -10,3 +10,4 @@
 /o-rdoc/
 /bin/
 !/bin/setup
+.ruby-version
