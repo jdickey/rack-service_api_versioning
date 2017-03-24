@@ -1,5 +1,7 @@
 <h1>Rack::ServiceApiVersioning</h1>
 
+[![Join the chat at https://gitter.im/rack-service_api_versioning/Lobby](https://badges.gitter.im/rack-service_api_versioning/Lobby.svg)](https://gitter.im/rack-service_api_versioning/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This Gem implements three Rack middleware components that, together, enable possibly multiple API Versions of one or more Component Services to be active at the same time. Incoming requests for a service specify their version requirements, if any, with an `Accept` HTTP header.
 
 ----
