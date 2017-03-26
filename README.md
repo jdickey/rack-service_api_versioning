@@ -6,6 +6,8 @@ This Gem implements three Rack middleware components that, together, enable poss
 
 ----
 
+[![Join the chat at https://gitter.im/jdickey/rack-service_api_versioning](https://badges.gitter.im/jdickey/rack-service_api_versioning.svg)](https://gitter.im/jdickey/rack-service_api_versioning?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## Contents
 
 - [A Note on Terminology](#a-note-on-terminology)
