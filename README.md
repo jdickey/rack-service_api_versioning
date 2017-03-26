@@ -1,12 +1,10 @@
 <h1>Rack::ServiceApiVersioning</h1>
 
-[![Join the chat at https://gitter.im/rack-service_api_versioning/Lobby](https://badges.gitter.im/rack-service_api_versioning/Lobby.svg)](https://gitter.im/rack-service_api_versioning/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/jdickey/rack-service_api_versioning](https://badges.gitter.im/jdickey/rack-service_api_versioning.svg)](https://gitter.im/jdickey/rack-service_api_versioning?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This Gem implements three Rack middleware components that, together, enable possibly multiple API Versions of one or more Component Services to be active at the same time. Incoming requests for a service specify their version requirements, if any, with an `Accept` HTTP header.
 
 ----
-
-[![Join the chat at https://gitter.im/jdickey/rack-service_api_versioning](https://badges.gitter.im/jdickey/rack-service_api_versioning.svg)](https://gitter.im/jdickey/rack-service_api_versioning?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## Contents
 
@@ -98,7 +96,7 @@ Running tests works just as you would expect for individual MiniTest::Spec test 
 1. Push to the branch (`git push origin NNN-my-new-feature`). Remember that the first time pushing a branch to a remote requires an "unconditional" push (`git push -u origin NNN-my-new-feature`);
 1. Create a new Pull Request. In the initial message, reference the open issue where your feature has been discussed; if no such issue exists (why?), then describe at some length the rationale for your new feature; your implementation strategy at a higher level than each individual commit message; anything future maintainers should be aware of; and so on. Modifications to existing code *must* have been discussed in an issue for PRs containing them to be accepted and merged;
 1. Don't be discouraged if the PR generates further discussion leading to further refinement of your PR through additional commits. These should *generally* be discussed in comments on the relevant issue; discussion in the Gitter room (see below) may also be useful;
-1. If you've comments, questions, or just want to talk through your ideas, come hang out in the project's [room on Gitter](https://gitter.im/rack-service_api_versioning). Ask away!
+1. If you've comments, questions, or just want to talk through your ideas, come hang out in the project's [room on Gitter](https://gitter.im/jdickey/rack-service_api_versioning). Ask away!
 
 ## License
 
